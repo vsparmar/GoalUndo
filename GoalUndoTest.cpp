@@ -1,5 +1,5 @@
 /**
- * Unit Tests for ConnectX class
+ * Unit Tests for GoalUndo class
 **/
 
 #include <gtest/gtest.h>
