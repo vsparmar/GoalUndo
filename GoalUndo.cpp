@@ -1,6 +1,10 @@
 #include "GoalUndo.h"
 #include <string>
 
+/* undoGoal
+   When there are existing goals, it removes the most recently added
+   one, along with any associated operations
+*/
 void GoalUndo::undoGoal()
 {
 	if( !goals.empty() )
@@ -9,6 +13,12 @@ void GoalUndo::undoGoal()
 	}
 }
 
+/* undoOperation
+   When there is an existing goal with more than one operation, remove the most
+   recently added operation. When there is only one operation in the most
+   recently added goal, it removes both the operation and the goal (i.e. goals
+   cannot exist without any operations in it).
+*/
 void GoalUndo::undoOperation()
 {
 	if( !goals.empty() )
@@ -22,9 +32,13 @@ void GoalUndo::undoOperation()
 	}
 }
 
+/* undoOperation(undoOp)
+   Overloaded undoOperation that searches the most recent goal (LIFO order)
+   for an operation that matches the argument and removes (only) the first
+   match found. If there are no matches, nothing is removed.
+*/
 void GoalUndo::undoOperation(std::string undoOp)
 {
-
 	if( !goals.empty() )
 	{
 		std::vector<std::string>::iterator iter;
@@ -42,6 +56,10 @@ void GoalUndo::undoOperation(std::string undoOp)
 	}
 }
 
+/* getGoal
+   Returns the name of the most recently added goal, or an empty string
+   if there are no goals.
+*/
 std::string GoalUndo::getGoal()
 {
 	if( goals.empty() )
@@ -50,6 +68,10 @@ std::string GoalUndo::getGoal()
 		return goals.top().name;
 }
 
+/* getOperations
+   Returns the names of all of the operations in the most recently added goal,
+   with a space between each operation.
+*/
 std::string GoalUndo::getOperations()
 {
 	if( goals.empty() )
@@ -60,13 +82,12 @@ std::string GoalUndo::getOperations()
 		std::vector <std::string> listOps = goals.top().operations;
 		
 		std::vector<std::string>::iterator iter;
-		//std::vector<std::string>::iterator last=goals.top().operations.end()--;
 		for( iter=goals.top().operations.begin(); 
 			 iter < goals.top().operations.end();
 			 iter++ )
 		{
 			allOps += *iter;
-			//add comma between each operation (but not last)
+			//add space between each operation (but not last)
 			if( iter < goals.top().operations.cend()-1 ) 
 				allOps += " ";
 		}
@@ -74,6 +95,10 @@ std::string GoalUndo::getOperations()
 	}
 }
 
+/* addOperation(newGoal,newOp)
+   Adds a new operation (newOp) within a new goal (newGoal). Both have to be
+   non-empty strings. If either argument is an empty string, nothing is added.
+*/
 void GoalUndo::addOperation(std::string newGoal, std::string newOp)
 {
 	if(!newGoal.empty() && !newOp.empty())
@@ -85,6 +110,11 @@ void GoalUndo::addOperation(std::string newGoal, std::string newOp)
 	}
 }
 
+/* addOperation(newOp)
+   Adds a new operation (newOp) within the most recently added goal. If the
+   argument is an empty string, nothing is added. If no goals exist, it
+   creates a new goal with the same name as the new operation
+*/
 void GoalUndo::addOperation(std::string newOp)
 {
 	if(!newOp.empty())
