@@ -1,3 +1,4 @@
+#include "GoalUndo.h"
 #include <string>
 
 void GoalUndo::undoGoal()
@@ -12,7 +13,7 @@ void GoalUndo::undoOperation()
 {
 	if( !goals.empty() )
 	{
-		goals.top().operations.pop();
+		goals.top().operations.pop_back();
 
 		if( goals.top().operations.empty() )
 		{
@@ -26,11 +27,15 @@ void GoalUndo::undoOperation(std::string undoOp)
 
 	if( !goals.empty() )
 	{
-		for(int i=goals.top().operations.size()-1; i>=0; i--)
+		std::vector<std::string>::iterator iter;
+
+		for(iter=goals.top().operations.end(); 
+			iter > goals.top().operations.begin();
+			--iter )
 		{
-			if( strcmp(goals.top().operations.at(i),undoOp) == 0 ) //match!
+			if( iter->compare(undoOp) == 0 ) //match!
 			{
-				goals.top().operations.remove(i);
+				goals.top().operations.erase(iter);
 				break; //only remove first LIFO match
 			}
 		}
@@ -53,33 +58,44 @@ std::string GoalUndo::getOperations()
 	{
 		std::string allOps = "";
 		std::vector <std::string> listOps = goals.top().operations;
-		for(int i=0; i<listOps.size(); i++)
+		
+		std::vector<std::string>::iterator iter;
+		//std::vector<std::string>::iterator last=goals.top().operations.end()--;
+		for( iter=goals.top().operations.begin(); 
+			 iter < goals.top().operations.end();
+			 iter++ )
 		{
-			allOps += listOps.at(i);
+			allOps += *iter;
 			//add comma between each operation (but not last)
-			if( i != listOps.size()-1 ) 
+			if( iter < goals.top().operations.cend()-1 ) 
 				allOps += " ";
 		}
+		return allOps;
 	}
 }
 
 void GoalUndo::addOperation(std::string newGoal, std::string newOp)
 {
-	Goal latest;
-	latest.name = newGoal;
-	goals.push(latest);
-	addOperation( newOp );
+	if(!newGoal.empty() && !newOp.empty())
+	{
+		Goal latest;
+		latest.name = newGoal;
+		goals.push(latest);
+		addOperation( newOp );
+	}
 }
 
 void GoalUndo::addOperation(std::string newOp)
 {
-	if( goals.empty() )
+	if(!newOp.empty())
 	{
-		addOperation( newOp, newOp );
-	}
-	else
-	{
-		goals.operations.push_back(newOp);
+		if( goals.empty() )
+		{
+			addOperation( newOp, newOp );
+		}
+		else
+		{
+			goals.top().operations.push_back(newOp);
+		}
 	}
 }
-

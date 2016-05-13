@@ -10,11 +10,11 @@ class GoalUndo
 	public:
 		void undoGoal();
 		void undoOperation();
-		void undoOperation(string);
+		void undoOperation(std::string);
 		std::string getOperations();
 		std::string getGoal();
-		void addOperation(std::string,std::string);
-		void addOperation(string);
+		void addOperation(std::string, std::string);
+		void addOperation(std::string);
 	private:
 		struct Goal{
 			std::string name;
@@ -23,5 +23,4 @@ class GoalUndo
 		std::stack <Goal> goals;
 };
 
-#include "GoalUndo.cpp"
 #endif
